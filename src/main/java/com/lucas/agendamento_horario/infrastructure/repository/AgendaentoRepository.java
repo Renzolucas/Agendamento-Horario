@@ -10,7 +10,7 @@ import com.lucas.agendamento_horario.infrastructure.repository.entity.ServicosSa
 import jakarta.transaction.Transactional;
 
 public interface AgendaentoRepository extends JpaRepository<AgendamentoEntity, Long>{
-    AgendamentoEntity findByServicoAndDataHoraAgendamentoBetween(ServicosSalao servico, LocalDateTime dataInicio, LocalDateTime dataFim);
+    boolean existsByServicosAndDataHoraAgendamentoBetween(ServicosSalao servico, LocalDateTime dataInicio, LocalDateTime dataFim);
 
     @Transactional
     void deleteByDataHoraAgendamentoAndCliente(LocalDateTime dataHoraAgendamento, String cliente);

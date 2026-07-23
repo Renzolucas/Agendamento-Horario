@@ -3,7 +3,9 @@ package com.lucas.agendamento_horario.services;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.lucas.agendamento_horario.infrastructure.repository.AgendaentoRepository;
 import com.lucas.agendamento_horario.infrastructure.repository.entity.AgendamentoEntity;
@@ -18,15 +20,16 @@ public class AgendamentoService {
 
     //SALVAR AGENDAMENTO
     public AgendamentoEntity salvarAgendamento(AgendamentoEntity agendamento, ServicosSalao servico){
-        LocalDateTime horaAgendamento = agendamento.getDataHoraAgendamento();
-        LocalDateTime horaFim = horaAgendamento.plusHours(1);
+        servico = agendamento.getServicos();
+        LocalDateTime horaAgendada = agendamento.getDataHoraAgendamento();
 
-        agendamento.setServicos(servico);
-        
-        AgendamentoEntity agendados = agendamentoRepository.findByServicoAndDataHoraAgendamentoBetween(servico, horaAgendamento, horaFim);
+        LocalDateTime limiteInicio = horaAgendada.minusMinutes(59);
+        LocalDateTime limiteFim = horaAgendada.plusHours(1);
 
-        if(agendados != null){
-            throw new RuntimeException("HORARIO INDISPONIVEL");
+        boolean horarioOcupado = agendamentoRepository.existsByServicosAndDataHoraAgendamentoBetween(servico, limiteInicio, limiteFim);
+
+        if(horarioOcupado){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Horario Indisponivel!!");
         }
 
         return agendamentoRepository.save(agendamento);
@@ -44,12 +47,12 @@ public class AgendamentoService {
 
         return agendamentoRepository.findByDataHoraAgendamentoBetween(horaInicial, horaFimDia);
     }
-
+    //ALTERAR DADOS DO CLIENTE
     public AgendamentoEntity alterarAgendamento(AgendamentoEntity agendamento, String cliente, LocalDateTime horaAgendada){
         AgendamentoEntity agenda = agendamentoRepository.findByAndClienteAndDataHoraAgendamento(cliente, horaAgendada);
 
         if(agenda == null){
-            throw new RuntimeException("HORARIO DISPONIVEL");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agendamento não encontrado!!");
         }
         agendamento.setId(agenda.getId());
         
