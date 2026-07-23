@@ -37,4 +37,13 @@ public class AgendamentoService {
         agendamentoRepository.deleteByDataHoraAgendamentoAndCliente(dataHoraAgendamento, cliente);
 
     }
+        //BUSCAR TODOS OS AGENDAMENTOS
+    public AgendamentoEntity buscarAgendamento(LocalDate data){
+        LocalDateTime horaInicial = data.atStartOfDay();
+        LocalDateTime horaFimDia = data.atTime(23,59,59);
+
+        return agendamentoRepository.findByDataHoraAgendamentoBetween(horaInicial, horaFimDia);
+    }
+    
 }
+
