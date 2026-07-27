@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -18,6 +19,7 @@ import lombok.Setter;
 @Table(name = "agendamento")
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 public class AgendamentoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
